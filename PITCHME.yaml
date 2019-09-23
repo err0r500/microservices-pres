@@ -4,10 +4,10 @@
 # https://github.com/gitpitch/gitpitch/wiki/Slideshow-Settings
 #
 theme : simple
-# theme-override : assets/css/PITCHME.css
-theme-override : assets/css/PITCHME.codemax.css
+theme-override : assets/css/PITCHME.css
+# theme-override : assets/css/PITCHME.codemax.css
 highlight : atom-one-light
 logo : assets/image/logo.png
 transition : none
 published : true
-footnote : "@_err0r500"
+footnote : "Matthieu Jacquot => @_err0r500"
