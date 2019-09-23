@@ -1,11 +1,7 @@
 # Microservices
-
 ---
-
 Les grands principes de programmation ne s'envolent pas avec les microservices
-
 ---
-
 Le but d'une bonne architecture n'est pas de trouver la solution ultime (elle n'existe pas) mais de permettre de toujours pouvoir évoluer progressivement
 
 ## Penser Unix philosophy :
