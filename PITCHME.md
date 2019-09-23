@@ -1,20 +1,55 @@
 # Microservices
 ---
+
 Les grands principes de programmation ne s'envolent pas avec les microservices
+
 ---
+
 Le but d'une bonne architecture n'est pas de trouver la solution ultime (elle n'existe pas) mais de permettre de toujours pouvoir évoluer progressivement
 
-## Penser Unix philosophy :
-OS = Cluster
-programmes = containers / unité de déploiement
-systeme = script
-Text stream interface = HTTP
+---
 
-## Microservices vs monolith  vs monolith distribué
+## Unix philosophy :
+
+---
+
+> Write programs that do one thing and do it well. 
+> Write programs to work together. 
+> Write programs to handle text streams, because that is a universal interface.
+
+__Douglas McIlroy (1978)_
+
+---
+@ul
+- OS = Cluster
+- programmes = containers / unité de déploiement
+- systeme = script
+- Text stream interface = HTTP
+@ulend
+
+---
+## Monolith vs Microservices vs monolith distribué
+---
+Monolith : Architecture hexagonale, clean architecture, ports & adapters
+
+@ul
+- Separation stricte des niveaux d'abstraction
+- Inversion of Control (dépendance et abstraction pointent dans la même direction)
+- Injection des dépendances
+@ulend
+
+---
+
+Ces principes deviennent vitaux au niveau d'une architecture microservices (ils ne le sont plus vraiment au niveau du service lui-meme)
+
+---
+
+
 services de base, services métier (réalisent une User Story en utilisant les services de base)
 penser résilience, pas DRY (couplage)
-
-- chaque microservice peut etre déployé indépendamment des autres
+ui  markdown
+kiku
+- microservice peut etre déployé indépendamment des autres
 - un service de base n'a aucune connaissance des autres services, cela permet aussi de ne pas faire fuiter l'intelligence
 - un service métier n'a aucune conscience de la localisation et de l'implémentation des autres 
 - chaque microservice peut être codé dans un langage différent (faire un choix en fonction du probleme, du moment, de la team)
