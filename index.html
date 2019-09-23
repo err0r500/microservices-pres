@@ -7,26 +7,30 @@
         <title>Remark</title>
         <style>
          @import url(https://fonts.googleapis.com/css?family=Droid+Serif);
+         @import url(https://fonts.googleapis.com/css?family=Lato:300&display=swap);
          @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
          @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
 
          body {
-             font-family: 'Droid Serif';
+             font-family: 'Lato';
+             color: #515151;
          }
          h1, h2, h3 {
              font-family: 'Yanone Kaffeesatz';
              font-weight: 400;
              margin-bottom: 0;
          }
+
          .remark-slide-content h1 { font-size: 3em; }
          .remark-slide-content h2 { font-size: 2em; }
          .remark-slide-content h3 { font-size: 1.6em; }
+         .remark-slide-content ul { line-height: 1.5; }
          .footnote {
              position: absolute;
              bottom: 3em;
          }
          li p { line-height: 1.25em; }
-         .red { color: #fa0000; }
+         .red { color: #ae725f; }
          .large { font-size: 2em; }
          a, a > code {
              color: rgb(249, 38, 114);
@@ -123,17 +127,15 @@
 name: title
 layout: true
 class: center, middle, inverse
-.footnote[Matthieu Jacquot .red[@_err0r500]]
 ---
 name: normal
 layout: true
 class: center, middle, noinverse
-.footnote[Matthieu Jacquot .red[@_err0r500]]
-
 ---
 template: title
 #Microservices
 
+.footnote[Matthieu Jacquot .red[@_err0r500]]
 ---
 template: normal
 Les grands principes de programmation ne s'envolent pas avec les microservices
@@ -160,7 +162,7 @@ template: normal
 __Douglas McIlroy (1978)__
 
 ---
-A quoi cela correspond-il 
+A quoi cela correspond-il ?
 
 --
 - OS = Cluster
@@ -169,10 +171,10 @@ A quoi cela correspond-il
 - programmes = containers / unité de déploiement
 
 --
-- systeme = script
+- script = configured cluster
 
 --
-- Text stream interface = HTTP
+- text stream interface = HTTP
 
 ---
 template: title
@@ -180,11 +182,13 @@ template: title
 
 ---
 
-Monolithe : clean architecture, Architecture hexagonale, ports & adapters
+### Monolithe
 
----
+_ ( Clean Architecture, Architecture Hexagonale, Ports & Adapters )_
 
-- Separation stricte des niveaux d'abstraction et de responsabilité
+--
+
+- Séparation stricte des niveaux d'abstraction et de responsabilité
 
 --
 - Inversion of Control (dépendance et abstraction pointent dans la même direction)
@@ -201,24 +205,24 @@ Ces principes deviennent vitaux au niveau d'une architecture microservices
 sinon, on construit un monolithe distribué
 
 ???
-- pas bon, c'est le pire des 2 mondes !
+- pas bon, c'est le pire des 2 mondes ! Vous upgradez en block et vous avez les inconvénients des systèmes distribués
 
 ---
-
+template: title
 ## A quoi reconnait-on une architecture microservices ?
 
 ---
-
+template: normal
 - chaque microservice peut etre déployé indépendamment des autres
 
 --
 - un service de base n'a aucune connaissance des autres services
 
 --
-- un service métier n'a aucune conscience de la localisation et de l'implémentation des autres
+- un service métier a comme seule connaissance qu'on lui injectera des services implémentants les APIs qu'il attend
 
 --
-- chaque microservice peut être codé dans un langage différent (faire un choix en fonction du probleme, du moment, de la team)
+- chaque service peut utiliser le langage qu'il souhaite
 
 --
 - il est assez petit pour que l'on puisse le recoder from scratch sans crainte
@@ -233,6 +237,7 @@ sinon, on construit un monolithe distribué
 - services de base, services métier (réalisent une User Story en utilisant les services de base)
 - service de base : n'a pas a connaitre son usage, reste simple 
 - service métier : injection de dépendance via paramétrisation des hosts qui implémentent une interface
+- n'importe quel langage : faire un choix en fonction du probleme, du moment, de la team
 
 ---
 template: title
@@ -303,212 +308,11 @@ Integration : création d'une unité de déploiement : artefact auto-suffisants
 Déploiement : run d'un artefact dans la stack
 Release : routing du traffic vers un service
 
-
-
-
-
-
-
-name: 2-cols
-layout: false
-.left-column[
-  ## What is it?
-]
-.right-column[
-  A simple, in-browser, Markdown-driven slideshow tool targeted at people who know their way around HTML and CSS, featuring:
-
-- Markdown formatting, with smart extensions
-
-- Presenter mode, with cloned slideshow view
-
-- Syntax highlighting, supporting a range of languages
-
-- Slide scaling, thus similar appearance on all devices / resolutions .red[*]
-
-- Touch support for smart phones and pads, i.e. swipe to navigate slides
-
-.footnote[.red[*] At least browsers try their best]
-]
 ---
-.left-column[
-  ## What is it?
-  ## Why use it?
-]
-.right-column[
-If your ideal slideshow creation workflow contains any of the following steps:
+template: title
+## Questions ?
+.footnote[Matthieu Jacquot .red[@_err0r500]]
 
-- Just write what's on your mind
-
-- Do some basic styling
-
-- Easily collaborate with others
-
-- Share with and show to everyone
-
-Then remark might be perfect for your next.red[*] slideshow!
-
-.footnote[.red[*] You probably want to convert existing slideshows as well]
-]
----
-.left-column[
-  ## What is it?
-  ## Why use it?
-]
-.right-column[
-As the slideshow is expressed using Markdown, you may:
-
-- Focus on the content, expressing yourself in next to plain text not worrying what flashy graphics and disturbing effects to put where
-
-As the slideshow is actually an HTML document, you may:
-
-- Display it in any decent browser
-
-- Style it using regular CSS, just like any other HTML content
-
-- Use it offline!
-
-As the slideshow is contained in a plain file, you may:
-
-- Store it wherever you like; on your computer, hosted from your Dropbox, hosted on Github Pages alongside the stuff you're presenting...
-
-- Easily collaborate with others, keeping track of changes using your favourite SCM tool, like Git or Mercurial
-]
----
-template: inverse
-
-## How does it work, then?
----
-name: how
-
-.left-column[
-  ## How does it work?
-### - Markdown
-]
-.right-column[
-A Markdown-formatted chunk of text is transformed into individual slides by JavaScript running in the browser:
-
-```remark
-# Slide 1
-This is slide 1
-
----
-
-# Slide 2
-This is slide 2
-```
-
-.slides[
-  .first[
-  ### Slide 1
-  This is slide 1
-  ]
-  .second[
-  ### Slide 2
-  This is slide 2
-  ]
-]
-
-Regular Markdown rules apply with only a single exception:
-
-  - A line containing three dashes constitutes a new slide
-  (not a horizontal rule, `&lt;hr /&gt;`)
-
-Have a look at the [Markdown website](http://daringfireball.net/projects/markdown/) if you're not familiar with Markdown formatting.
-]
----
-.left-column[
-  ## How does it work?
-  ### - Markdown
-  ### - Inside HTML
-]
-.right-column[
-A simple HTML document is needed for hosting the styles, Markdown and the generated slides themselves:
-
-```xml
-            <!DOCTYPE html>
-            <html>
-                <head>
-                    <style type="text/css">
-                     /* Slideshow styles */
-                    </style>
-                </head>
-                <body>
-                    *    <textarea id="source">
-                    <!-- Slideshow Markdown -->
-    &lt;/textarea&gt;
-*    <script src="remark.js">
-</script>
-<script>
- *      var slideshow = remark.create();
-</script>
-                </body>
-            </html>
-```
-
-You may download remark to have your slideshow not depend on any online resources, or reference the [latest version](http://remarkjs.com/downloads/remark-latest.min.js) online directly.
-]
----
-template: inverse
-
-## Of course, Markdown can only go so far.
----
-.left-column[
-  ## Markdown extensions
-]
-.right-column[
-To help out with slide layout and formatting, a few Markdown extensions have been included:
-
-- Slide properties, for naming, styling and templating slides
-
-- Content classes, for styling specific content
-
-- Syntax highlighting, supporting a range of languages
-]
-
----
-.left-column[
-  ## Markdown extensions
-  ### - Slide properties
-]
-.right-column[
-Initial lines containing key-value pairs are extracted as slide properties:
-
-```remark
-name: agenda
-class: middle, center
-
-# Agenda
-
-The name of this slide is {{ name }}.
-```
-
-Slide properties serve multiple purposes:
-
-* Naming and styling slides using properties `name` and `class`
-
-* Using slides as templates using properties `template` and `layout`
-
-* Expansion of `{{ property }}` expressions to property values
-
-See the [complete list](https://github.com/gnab/remark/wiki/Markdown#slide-properties) of slide properties.
-]
----
-.left-column[
-  ## Markdown extensions
-  ### - Slide properties
-  ### - Content classes
-]
-.right-column[
-Any occurences of one or more dotted CSS class names followed by square brackets are replaced with the contents of the brackets with the specified classes applied:
-
-
----
-name: last-page
-template: inverse
-
-## That's all folks (for now)!
-
-Slideshow created using [remark](http://github.com/gnab/remark).
                     </textarea>
                     <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
                     <script>
