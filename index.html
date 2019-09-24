@@ -264,11 +264,12 @@ template: title
 ## Ces grands principes restent avec les microservices
 
 --
-c'est le contexte & l'implémentation qui changent
+
+En fait, ils deviennent même vitaux :
 
 --
 
-En fait, ils deviennent même vitaux
+c'est le contexte & l'implémentation qui changent
 
 ---
 ### Séparation des niveaux d'abstraction
@@ -570,17 +571,25 @@ template: title
 --
 
 data plane vs application
----
-
 
 ---
 ## Responsabilités du data plane
 
+--
+
 service discovery
+
+--
 
 retries
 
+--
+
 circuit-breaking
+
+--
+
+fault-injection (optionnel)
 
 ---
 ## Responsabilités du code
@@ -700,7 +709,7 @@ Intégration : création d'une unité de déploiement : artefact auto-suffisants
 
 --
 
-Déploiement : run d'un artefact dans la stack
+Déploiement : run d'un artefact dans le data plane
 
 --
 
@@ -715,7 +724,7 @@ Comment construire un système stable sur une base instable
 
 --
 
-"everything fails all the time"
+___"everything fails all the time"___
 
 (machine, composants, network, break API)
 
@@ -727,13 +736,19 @@ Comment construire un système stable sur une base instable
 --
 OS et Applications exposent des metrics (observabilité)
 
-
+???
+OS des VMs
 ---
-### Detecter
+### Détecter
 
 --
 
-monitoring machines & applications
+monitoring des machines & applications
+
+---
+### Alerter
+
+basé sur le monitoring
 
 --
 
@@ -741,12 +756,6 @@ ex : detection d'anomalies via ratios de requêtes inter-services
 
 ???
 un service A appelle B ou C ( suivant valeur param ) : reqA == reqB + reqC
-
----
-### Alerter
-
-alerting based on machine & services monitoring
-
 ---
 ### Debuger 
 --
