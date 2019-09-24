@@ -127,10 +127,12 @@
 name: title
 layout: true
 class: center, middle, inverse
+            <!-- .footnote[Talan Labs] -->
 ---
 name: normal
 layout: true
 class: center, middle, noinverse
+            <!-- .footnote[Talan Labs] -->
 ---
 template: title
 #Microservices
@@ -141,7 +143,7 @@ template: normal
 Les grands principes de programmation ne s'envolent pas avec les microservices
 
 ---
-Le but d'une __bonne architecture__ n'est pas de trouver la solution ultime (elle n'existe pas) mais de __permettre de toujours pouvoir évoluer progressivement__
+Le but d'une __bonne architecture__ n'est pas de trouver une solution définitive mais de __permettre les évolutions progressives__
 
 ???
 - evolutionary architecture (Neal Ford)
@@ -162,33 +164,40 @@ template: normal
 __Douglas McIlroy (1978)__
 
 ---
-### A quoi cela correspond-il ?
+### Ancien _vs_ Nouveau contexte
 
 --
 
 programmes (ls, cp, grep) 
 --
--> service "de base"
+-> services "de base"
 
 --
 
-shell script
+\+ shell scripts
 --
- -> service "métier"
+ -> services "métier"
 
 --
 
-text stream
+\+ text stream
 --
  -> HTTP
 
 --
 
-OS
+\+ OS
 --
- -> Cluster
+ -> Data plane
+
+--
+_________________
+
+= système
+
 
 ???
+
 - artefact : programme auto-suffisant, unité de déploiement
 - services de base : réalise une tache simple sans logique métier (ACL datastore, API tierce etc.)
 - services métier : réalise une US en utilisant les services de base)
@@ -205,7 +214,7 @@ _ ( Clean Architecture, Architecture Hexagonale, Ports & Adapters )_
 
 --
 
-Séparation stricte des niveaux d'abstraction et de responsabilité
+Séparation stricte des niveaux d'abstraction et des responsabilités
 
 --
 
@@ -219,7 +228,8 @@ __... sinon__
 
 __monolithe "fragile"__
 
-
+???
+IoC : on peut changer d'implémentation sans toucher au code métier
 
 ---
 ### Système distribué
@@ -228,7 +238,7 @@ _( microservices )_
 
 --
 
-Séparation stricte des niveaux d'abstraction et de responsabilité
+Séparation stricte des niveaux d'abstraction et des responsabilités
 
 --
 
@@ -256,25 +266,29 @@ template: title
 --
 c'est le contexte & l'implémentation qui changent
 
----
-
-### En fait, ils deviennent même vitaux
-
----
-
-__niveaux d'abstraction__ forcés par le contexte 
 --
-et la ségrégation des responsabilités
+
+En fait, ils deviennent même vitaux
+
+---
+### Séparation des niveaux d'abstraction
 
 --
 
-__IoC__ via le réseau (facilité par un "service mesh")
+application 
+--
+vs data plane
 
-???
-- vital au niveau du système, moins au niveau du service lui-même
-- sinon, on construit un monolithe distribué : pas bon, c'est le pire des 2 mondes ! Vous upgradez en block et vous avez les inconvénients des systèmes distribués
+--
+
+### Inversion of Control
+
+--
+
+abstraction par le network
 
 ---
+
 template: title
 ## A quoi reconnait-on une architecture microservices ?
 
@@ -302,8 +316,29 @@ ne fait qu'une seule chose et la fait bien
 ???
 n'importe quel langage : faire un choix en fonction du probleme, du moment, de la team
 ---
+
+### le système
+
+--
+
+est pensé pour la résilience
+
+--
+
+et les évolutions graduelles
+
+--
+
+( anti-fragile )
+
+???
+résilience on mutualise downstream
+
+on ne partage pas de code inter services
+
+---
 template: title
-## service "de base" vs "métier"
+## service "de base" vs service "métier"
 
 --
 
@@ -318,7 +353,7 @@ n'a pas a connaitre son usage
 
 --
 
-il fait son job, point, sans se soucier du but dans lequel il est utilisé
+il fait son job, sans se soucier du but dans lequel il est utilisé
 
 --
 
@@ -330,13 +365,15 @@ ex : `grep`
 
 --
 
-ne se pose aucune question sur les outils qu'il utilise 
+ne se pose aucune question sur les outils qu'il utilise
 
 --
 
-il assume qu'ils respectent un contrat, 
+il assume qu'ils respectent leur contrat,
+
 --
-et ne se soucie __que__ du but dans lequel il les utilise
+
+et les orchestre en ne se souciant __que__ de la finalité
 
 --
 
@@ -345,16 +382,51 @@ ex : réalisation d'une user-story
 
 ???
 - outils : services de base
-- résilient : pas de DRY inter-services, on mutualise downstream, pas upstream
-- injection de dépendance via paramétrisation des baseURL qui implémentent une interface
-
----
-
-système pensé pour la résilience
 
 ---
 template: title
-## Nouveau contexte
+## Inversion of Control
+
+--
+
+Abstraction par le network
+---
+
+### Les moyens
+
+--
+
+paramétrisation des "baseURL"
+
+--
+
+API Gateway
+
+--
+
+Service Mesh avec L7 load-balancer
+
+???
+- baseURL : protocol + domain + port 
+
+---
+### En bonus
+
+--
+
+canary release
+
+--
+
+A/B testing
+
+--
+
+dark launch & trafic observation
+
+???
+en pouvant faire pointer vers de nouveaux services de base, on peut changer l'implémentation (IoC)
+
 ---
 template: title
 ## Distributed Systems fallacies
@@ -362,12 +434,6 @@ template: title
 --
 
 tout va bien se passer
-
-
-
-
-
-
 
 
 ---
@@ -495,16 +561,64 @@ vous ne savez pas le nombre de hops dans un call réseau
 
 
 ???
-vous faites du n-to-n : la latence pour une même requete peut varier dratiquement suivant le chemin qu'elle prend
+vous faites du many-to-many : la latence pour une même requete peut varier drastiquement suivant le chemin qu'elle prend
 
 ---
 template: title
-## Nouveau contexte
+## Séparation stricte des niveaux d'abstraction et des responsabilités
+
+--
+
+data plane vs application
 ---
-template: title
-## n instances, n machines
+
 
 ---
+## Responsabilités du data plane
+
+service discovery
+
+retries
+
+circuit-breaking
+
+---
+## Responsabilités du code
+
+--
+
+tout ce qu'il fait habituellement dans un monolithe
+
+--
+
+### mais en plus, il
+
+--
+
+permet les retries : idempotent
+
+--
+
+simplifie la logique : CQRS
+
+--
+
+la communication : politique de déprécation
+
+--
+
+l'évolutibilité : backward & forward compatible
+
+---
+template: title
+## n++ instances 
+--
+sur n++ machines
+
+---
+### Tooling
+
+--
 
 La survie passe par l'automatisation (et le versionning) de tout ce qui peut l'être
 
@@ -516,29 +630,9 @@ Trouver les outils les plus simples permettant de faire le travail sans customiz
 ???
 iac : terraform, k8s
 ---
-template: title
-## Tests 
-
----
-
-CI pour le code
+### Gestion des sources
 
 --
-
-Chaos Engineering pour le système
-
-???
-- fail : voir comment avoir un systeme stable construit sur une base instable
-- CI : tests API exposées uniquement, intégration
-
----
-
-- problème de l'update data distribué : problème des généraux byzantins (transacation distribuée, 2PC, 3PC, saga ?)
-
----
-template: title
-## Gestion des sources
----
 
 multi-repo
 
@@ -553,25 +647,6 @@ trunk-based developpement
 - trunk-based : une branche == un mec, 1 jour max -> PR, code-review doivent être très rapides
 - trunk-based : si vous pensez que votre projet est trop gros pour cela, c'est que ce n'est pas un microservice
 - artefact repository : docker registry, npm
-
----
-template: title
-## Abstraction du routing
-
----
-
-paramétrisation des "baseURL"
-
---
-
-API Gateway
-
---
-
-Service Mesh avec L7 load-balancer
-
-???
-- baseURL : protocol + domain + port 
 
 ---
 template: title
@@ -597,29 +672,15 @@ Host security
 - sur k8s : Security contexts
 
 ---
-
-## CI/CD ?
-Integration : création d'une unité de déploiement : artefact auto-suffisants
-Déploiement : run d'un artefact dans la stack
-Release : routing du traffic vers un service
-
-
-## API (role de l'application)
-- idempotent
-- CQRS
-- backward & forward compatible
-- politique de déprécation
-
----
 template: title
 ## Est-ce que cela marche ?
 
 --
 
-ça marche sur ma machine !
+sur ma machine, oui !
 
 ---
-Tout les éléments du système concourrent au résultat final
+Tout les éléments, ___data plane & applications___, participent au résultat final
 
 --
 
@@ -628,6 +689,39 @@ Tout les éléments du système concourrent au résultat final
 ???
 Devops & cloud-native deviennent obligatoires
 ---
+## En amont
+---
+
+### CI/CD pour tous !
+
+--
+
+Intégration : création d'une unité de déploiement : artefact auto-suffisants
+
+--
+
+Déploiement : run d'un artefact dans la stack
+
+--
+
+Release : routing du traffic vers un service
+
+---
+## En aval
+
+---
+
+Comment construire un système stable sur une base instable
+
+--
+
+"everything fails all the time"
+
+(machine, composants, network, break API)
+
+---
+
+
 ### Mesurer
 
 --
@@ -670,7 +764,7 @@ Logging centralisé
 
 --
 
-( parce que grep n'est pas très adapté pour travailler sur les logs de 50 machines )
+sinon, un grep dans les logs de 50 machines ?
 
 
 ---
