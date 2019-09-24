@@ -162,19 +162,36 @@ template: normal
 __Douglas McIlroy (1978)__
 
 ---
-A quoi cela correspond-il ?
+### A quoi cela correspond-il ?
 
 --
-- OS = Cluster
+
+programmes (ls, cp, grep) 
+--
+-> service "de base"
 
 --
-- programmes = containers / unité de déploiement
+
+shell script
+--
+ -> service "métier"
 
 --
-- script = configured cluster
+
+text stream
+--
+ -> HTTP
 
 --
-- text stream interface = HTTP
+
+OS
+--
+ -> Cluster
+
+???
+- artefact : programme auto-suffisant, unité de déploiement
+- services de base : réalise une tache simple sans logique métier (ACL datastore, API tierce etc.)
+- services métier : réalise une US en utilisant les services de base)
 
 ---
 template: title
@@ -188,14 +205,70 @@ _ ( Clean Architecture, Architecture Hexagonale, Ports & Adapters )_
 
 --
 
-- Séparation stricte des niveaux d'abstraction et de responsabilité
+Séparation stricte des niveaux d'abstraction et de responsabilité
 
 --
-- Inversion of Control (dépendance et abstraction pointent dans la même direction)
+
+Inversion of Control (dépendance et abstraction pointent dans la même direction)
+
+--
+
+__... sinon__
+
+--
+
+__monolithe "fragile"__
+
+
+
+---
+### Système distribué
+
+_( microservices )_
+
+--
+
+Séparation stricte des niveaux d'abstraction et de responsabilité
+
+--
+
+Inversion of Control (dépendance et abstraction pointent dans la même direction)
+
+--
+
+:-)
+
+--
+
+__... sinon__
+
+--
+
+__"monolithe distribué"__
+
+???
+monolithe distribué : le pire des 2 mondes
+
+---
+template: title
+## Ces grands principes restent avec les microservices
+
+--
+c'est le contexte & l'implémentation qui changent
 
 ---
 
-Ces principes deviennent vitaux au niveau d'une architecture microservices
+### En fait, ils deviennent même vitaux
+
+---
+
+__niveaux d'abstraction__ forcés par le contexte 
+--
+et la ségrégation des responsabilités
+
+--
+
+__IoC__ via le réseau (facilité par un "service mesh")
 
 ???
 - vital au niveau du système, moins au niveau du service lui-même
@@ -207,33 +280,81 @@ template: title
 
 ---
 template: normal
-- chaque microservice peut etre déployé indépendamment des autres
+
+### chaque service
 
 --
-- chaque service peut utiliser le langage qu'il souhaite
+
+peut être déployé indépendamment
 
 --
-- il est assez petit pour que l'on puisse le recoder from scratch sans crainte
+
+peut utiliser le langage qu'il souhaite
 
 --
-- pensé pour être résilient
+
+est assez petit pour être recodé from scratch sans crainte
 
 --
-- il ne fait qu'une seule chose et la fait bien
 
---
-- un service de base n'a aucune connaissance des autres services
-
---
-- un service métier a comme seule connaissance qu'on lui injectera des services implémentants les APIs qu'il attend
+ne fait qu'une seule chose et la fait bien
 
 ???
-- services de base, services métier (réalisent une User Story en utilisant les services de base)
-- service de base : n'a pas a connaitre son usage, reste simple
-- service métier : injection de dépendance via paramétrisation des hosts qui implémentent une interface
-- n'importe quel langage : faire un choix en fonction du probleme, du moment, de la team
-- résilient : pas de DRY inter-services, on mutualise downstream, pas upstream
+n'importe quel langage : faire un choix en fonction du probleme, du moment, de la team
+---
+template: title
+## service "de base" vs "métier"
 
+--
+
+opposés et complémentaires
+
+---
+### Un service de base
+
+--
+
+n'a pas a connaitre son usage
+
+--
+
+il fait son job, point, sans se soucier du but dans lequel il est utilisé
+
+--
+
+ex : `grep`
+
+---
+
+### Un service métier
+
+--
+
+ne se pose aucune question sur les outils qu'il utilise 
+
+--
+
+il assume qu'ils respectent un contrat, 
+--
+et ne se soucie __que__ du but dans lequel il les utilise
+
+--
+
+ex : réalisation d'une user-story
+
+
+???
+- outils : services de base
+- résilient : pas de DRY inter-services, on mutualise downstream, pas upstream
+- injection de dépendance via paramétrisation des baseURL qui implémentent une interface
+
+---
+
+système pensé pour la résilience
+
+---
+template: title
+## Nouveau contexte
 ---
 template: title
 ## Distributed Systems fallacies
@@ -250,11 +371,11 @@ tout va bien se passer
 
 
 ---
-__The network is reliable__
+### The network is reliable
 
 --
 
-ca va drop
+ça va drop
 
 --
 
@@ -262,7 +383,7 @@ ca va drop
 
 
 ---
-__Latency is zero__
+### Latency is zero
 
 
 --
@@ -283,7 +404,7 @@ les détails "bas-niveau" peuvent avoir leur importance : colocaliser des servic
 back pressure : upstream tells downstream to stop sending him data
 
 ---
-__Bandwidth is infinite__
+### Bandwidth is infinite
 
 --
 
@@ -294,22 +415,27 @@ __Bandwidth is infinite__
 
 
 ---
-__The network is secure__
+### The network is secure
 
 --
 
-zero-trust network
+_zero-trust network :_
 
-???
-zero-trust : mTLS
-oubliez la défense en périmètre
+--
 
+mTLS inter-services
 
+--
 
+network policies
+
+--
+
+oubliez la défense en périmètre !
 
 
 ---
-__Topology doesn't change__
+### Topology doesn't change
 
 --
 
@@ -321,12 +447,11 @@ Service discovery
 
 
 
-
 ---
-__There is one administrator__
-
+### There is one administrator
 
 --
+
 conf centralisée
 
 --
@@ -340,25 +465,24 @@ abstraction de ce qui se passe derriere l'API d'un service
 
 
 ---
-__Transport cost is zero__
+### Transport cost is zero
 
 --
 
-Le network fait partie intégrante de votre systeme :
+Le network fait partie intégrante de votre système :
 
 --
 
-Il va falloir la gérer
+Il va falloir le gérer
 
 
 
 ???
-aussi : chaque appel de service nécessite (dé)sérialization
-
+aussi : chaque appel de service nécessite (dé)sérialization (cout niveau perf)
 
 
 ---
-__The network is homogeneous__
+### The network is homogeneous
 
 
 --
@@ -373,7 +497,9 @@ vous ne savez pas le nombre de hops dans un call réseau
 ???
 vous faites du n-to-n : la latence pour une même requete peut varier dratiquement suivant le chemin qu'elle prend
 
-
+---
+template: title
+## Nouveau contexte
 ---
 template: title
 ## n instances, n machines
@@ -382,14 +508,13 @@ template: title
 
 La survie passe par l'automatisation (et le versionning) de tout ce qui peut l'être
 
-
-???
-iac : terraform, k8s
 --
+
 Trouver les outils les plus simples permettant de faire le travail sans customization
 
 
-
+???
+iac : terraform, k8s
 ---
 template: title
 ## Tests 
@@ -485,30 +610,86 @@ Release : routing du traffic vers un service
 - backward & forward compatible
 - politique de déprécation
 
-
+---
+template: title
 ## Est-ce que cela marche ?
 
 --
-Tout les éléments du système concourrent au résultat final (#devops)
+
+ça marche sur ma machine !
+
+---
+Tout les éléments du système concourrent au résultat final
+
+--
+
+### #devops
 
 ???
 Devops & cloud-native deviennent obligatoires
 ---
+### Mesurer
 
+--
+OS et Applications exposent des metrics (observabilité)
+
+
+---
 ### Detecter
+
+--
+
+monitoring machines & applications
+
+--
+
+ex : detection d'anomalies via ratios de requêtes inter-services
+
+???
+un service A appelle B ou C ( suivant valeur param ) : reqA == reqB + reqC
+
+---
+### Alerter
 
 alerting based on machine & services monitoring
 
 ---
-### Debug & improve performance
+### Debuger 
+--
+( y compris les performances )
 
 --
-- Distributed tracing (observability)
+Distributed tracing
+
+---
+### Auditer
 
 --
-### Audit
-- Logging centralisé 
 
+Logging centralisé
+
+--
+
+( parce que grep n'est pas très adapté pour travailler sur les logs de 50 machines )
+
+
+---
+template: title 
+## Qu'est-ce qui se passe si ... ?
+
+--
+
+A votre avis ?
+
+--
+
+Qu'est-ce qui pourrait faire que cela arrive ?
+
+--
+
+On a qu'à essayer !
+
+###  chaos-engineering
 
 
 ---
