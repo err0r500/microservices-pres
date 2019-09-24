@@ -199,13 +199,7 @@ Ces principes deviennent vitaux au niveau d'une architecture microservices
 
 ???
 - vital au niveau du système, moins au niveau du service lui-même
-
----
-
-sinon, on construit un monolithe distribué
-
-???
-- pas bon, c'est le pire des 2 mondes ! Vous upgradez en block et vous avez les inconvénients des systèmes distribués
+- sinon, on construit un monolithe distribué : pas bon, c'est le pire des 2 mondes ! Vous upgradez en block et vous avez les inconvénients des systèmes distribués
 
 ---
 template: title
@@ -216,97 +210,306 @@ template: normal
 - chaque microservice peut etre déployé indépendamment des autres
 
 --
-- un service de base n'a aucune connaissance des autres services
-
---
-- un service métier a comme seule connaissance qu'on lui injectera des services implémentants les APIs qu'il attend
-
---
 - chaque service peut utiliser le langage qu'il souhaite
 
 --
 - il est assez petit pour que l'on puisse le recoder from scratch sans crainte
 
 --
+- pensé pour être résilient
+
+--
 - il ne fait qu'une seule chose et la fait bien
 
 --
-- pensée pour être résiliente, pas DRY (couplage)
+- un service de base n'a aucune connaissance des autres services
+
+--
+- un service métier a comme seule connaissance qu'on lui injectera des services implémentants les APIs qu'il attend
 
 ???
 - services de base, services métier (réalisent une User Story en utilisant les services de base)
-- service de base : n'a pas a connaitre son usage, reste simple 
+- service de base : n'a pas a connaitre son usage, reste simple
 - service métier : injection de dépendance via paramétrisation des hosts qui implémentent une interface
 - n'importe quel langage : faire un choix en fonction du probleme, du moment, de la team
+- résilient : pas de DRY inter-services, on mutualise downstream, pas upstream
 
 ---
 template: title
-## Systemes distribués
+## Distributed Systems fallacies
+
+--
+
+tout va bien se passer
+
+
+
+
+
+
+
 
 ---
-
-- Ne pas croire dans les "network fallacies"
-
---
-- Ca va fail, c'est certain : messages malformés, drop d'une partie des messages, messages reçus plusieurs fois
+__The network is reliable__
 
 --
-- Tout doit étre automatisé : pas de script à la main ! 
+
+ca va drop
 
 --
-- Trouver les outils les plus simples permettant de faire le travail sans customization
 
---
-- la CI test l'applicatif en black box (test d'intégration), le chaos engineering test le systeme
+ça va corrompre
 
---
-- update data distribué : problème des généraux byzantins (transacation distribuée, 2PC, 3PC, saga ?)
 
 ---
+__Latency is zero__
 
-## Methodes de travail
 
-@ul
-- simplifier la CI ! (évitez le mono-repo). Le point de contact entre votre code et votre stack, c'est l'artefact repository
-- faire du trunk-based developpement : si vous pensez que votre projet est trop gros pour cela : c'est que vous n'etes plus en train de faire un microservice
-- doit étre idempotent
-- CQRS peut aider a rester simple 
-- Devops & cloud-native deviennent obligatoires
-@ulend
+--
+
+low-level matters
+
+--
+
+circuit-breaking
+
+--
+
+back pressure
+
 
 ???
+les détails "bas-niveau" peuvent avoir leur importance : colocaliser des services devant travailler rapidement ensemble sur une même machine
+back pressure : upstream tells downstream to stop sending him data
+
+---
+__Bandwidth is infinite__
+
+--
+
+1000 services qui broadcastent leurs messages n'est pas une option
+
+
+
+
+
+---
+__The network is secure__
+
+--
+
+zero-trust network
+
+???
+zero-trust : mTLS
+oubliez la défense en périmètre
+
+
+
+
+
+---
+__Topology doesn't change__
+
+--
+
+Service discovery
+
+???
+- vous ne pointez pas vers une instance mais vers n instances healthy
+
+
+
+
+
+---
+__There is one administrator__
+
+
+--
+conf centralisée
+
+--
+
+abstraction de ce qui se passe derriere l'API d'un service
+
+
+
+
+
+
+
+---
+__Transport cost is zero__
+
+--
+
+Le network fait partie intégrante de votre systeme :
+
+--
+
+Il va falloir la gérer
+
+
+
+???
+aussi : chaque appel de service nécessite (dé)sérialization
+
+
+
+---
+__The network is homogeneous__
+
+
+--
+
+race conditions :
+
+--
+
+vous ne savez pas le nombre de hops dans un call réseau
+
+
+???
+vous faites du n-to-n : la latence pour une même requete peut varier dratiquement suivant le chemin qu'elle prend
+
+
+---
+template: title
+## n instances, n machines
+
+---
+
+La survie passe par l'automatisation (et le versionning) de tout ce qui peut l'être
+
+
+???
+iac : terraform, k8s
+--
+Trouver les outils les plus simples permettant de faire le travail sans customization
+
+
+
+---
+template: title
+## Tests 
+
+---
+
+CI pour le code
+
+--
+
+Chaos Engineering pour le système
+
+???
+- fail : voir comment avoir un systeme stable construit sur une base instable
+- CI : tests API exposées uniquement, intégration
+
+---
+
+- problème de l'update data distribué : problème des généraux byzantins (transacation distribuée, 2PC, 3PC, saga ?)
+
+---
+template: title
+## Gestion des sources
+---
+
+multi-repo
+
+--
+
+trunk-based developpement
+
+
+???
+- multi-repo : simplifcation des pipelines de CI, complexifie le partage de code -> c'est ce que l'on veut !
+- multi-repo : le point de contact entre votre code et votre stack, c'est l'artefact repository
+- trunk-based : une branche == un mec, 1 jour max -> PR, code-review doivent être très rapides
+- trunk-based : si vous pensez que votre projet est trop gros pour cela, c'est que ce n'est pas un microservice
 - artefact repository : docker registry, npm
 
 ---
-## Vous allez devoir debugger un code réparti sur plusieurs machines, il faut de nouveaux outils :
----
-### Detecter
-- alerting based on machine & services monitoring
----
-### Debug & improve performance
-- Distributed tracing (observability)
-- Logging centralisé, 
----
-
+template: title
 ## Abstraction du routing
-Service discovery : vous ne pointez pas vers une instance mais vers n instances healthy
 
-## Sécurité :
-- Zero-trust networks
-- Docker image scanning, distroless base images
-- Host security
+---
+
+paramétrisation des "baseURL"
+
+--
+
+API Gateway
+
+--
+
+Service Mesh avec L7 load-balancer
+
+???
+- baseURL : protocol + domain + port 
+
+---
+template: title
+## Sécurité
+
+---
+
+Zero-trust networks
+
+--
+
+Container image scanning
+
+--
+
+distroless base images
+
+--
+
+Host security
 
 ???
 - sur k8s : Security contexts
 
 ---
 
-Vous devez gérer les retries & le circuit-breaking, mais cela ne doit pas être au niveau du code, ce n'est pas son niveau d'abstraction
-
 ## CI/CD ?
 Integration : création d'une unité de déploiement : artefact auto-suffisants
 Déploiement : run d'un artefact dans la stack
 Release : routing du traffic vers un service
+
+
+## API (role de l'application)
+- idempotent
+- CQRS
+- backward & forward compatible
+- politique de déprécation
+
+
+## Est-ce que cela marche ?
+
+--
+Tout les éléments du système concourrent au résultat final (#devops)
+
+???
+Devops & cloud-native deviennent obligatoires
+---
+
+### Detecter
+
+alerting based on machine & services monitoring
+
+---
+### Debug & improve performance
+
+--
+- Distributed tracing (observability)
+
+--
+### Audit
+- Logging centralisé 
+
+
 
 ---
 template: title
