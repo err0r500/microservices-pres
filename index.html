@@ -195,13 +195,6 @@ _________________
 
 = logiciel
 
-
-???
-
-- artefact : programme auto-suffisant, unité de déploiement
-- services de base : réalise une tache simple sans logique métier (ACL datastore, API tierce etc.)
-- services métier : réalise une US en utilisant les services de base)
-
 ---
 template: title
 ## Monolithe vs Microservices vs Monolithe distribué
@@ -209,6 +202,8 @@ template: title
 ---
 
 ### Monolithe
+
+--
 
 _ ( Clean Architecture, Architecture Hexagonale, Ports & Adapters )_
 
@@ -220,6 +215,9 @@ Séparation stricte des niveaux d'abstraction et des responsabilités
 
 Inversion of Control (dépendance et abstraction pointent dans la même direction)
 
+???
+IoC : on peut changer d'implémentation sans toucher au code métier
+
 --
 
 __... sinon__
@@ -228,11 +226,10 @@ __... sinon__
 
 __monolithe "fragile"__
 
-???
-IoC : on peut changer d'implémentation sans toucher au code métier
-
 ---
 ### Système distribué
+
+--
 
 _( microservices )_
 
@@ -274,17 +271,11 @@ c'est le contexte & l'implémentation qui changent
 ---
 ### Séparation des niveaux d'abstraction
 
---
-
-application 
---
-vs data plane
+application vs data plane
 
 --
 
 ### Inversion of Control
-
---
 
 abstraction par le network
 
@@ -359,6 +350,8 @@ il fait son job, sans se soucier du but dans lequel il est utilisé
 --
 
 ex : `grep`
+--
+, accès à un datastore particulier
 
 ---
 
@@ -370,7 +363,7 @@ ne se pose aucune question sur les outils qu'il utilise
 
 --
 
-il assume qu'ils respectent leur contrat,
+il considère qu'ils respectent leur contrat,
 
 --
 
@@ -442,16 +435,38 @@ tout va bien se passer
 
 --
 
-ça va drop
+.red[ça va drop]
 
 --
 
-ça va corrompre
+.red[ça va corrompre]
 
+--
+
+retries
+
+--
+
+dead letter queue
+
+--
+
+???
+flooding upstream
+
+attention au "poison message"
 
 ---
 ### Latency is zero
 
+
+--
+
+.red[ sur la même machine, sur 2 DC différents : ça ne prend pas le même temps !]
+
+--
+
+.red[ un service peut mettre _longtemps_ à répondre ]
 
 --
 
@@ -465,9 +480,12 @@ circuit-breaking
 
 back pressure
 
+--
+
+réponse async
+
 
 ???
-les détails "bas-niveau" peuvent avoir leur importance : colocaliser des services devant travailler rapidement ensemble sur une même machine
 back pressure : upstream tells downstream to stop sending him data
 
 ---
@@ -475,14 +493,27 @@ back pressure : upstream tells downstream to stop sending him data
 
 --
 
-1000 services qui broadcastent leurs messages n'est pas une option
+.red[si tous le services broadcastent leurs messages, vous pouvez flooder le network]
 
+--
 
-
+calls directs
 
 
 ---
 ### The network is secure
+
+--
+
+.red[n'importe quel service peut être compromis]
+
+--
+
+.red[le traffic ne sort _vraiment jamais_ du LAN ?]
+
+--
+
+on opère toujours comme s'il passait par Internet !
 
 --
 
@@ -498,11 +529,19 @@ network policies
 
 --
 
-oubliez la défense en périmètre !
+__oubliez la défense en périmètre !__
 
 
 ---
 ### Topology doesn't change
+
+--
+
+.red[des services tombent et réaparaissent tout le temps]
+
+--
+
+.red[les IPs ne sont pas fixes]
 
 --
 
@@ -511,11 +550,12 @@ Service discovery
 ???
 - vous ne pointez pas vers une instance mais vers n instances healthy
 
-
-
-
 ---
 ### There is one administrator
+
+--
+
+.red[plusieurs personnes peuvent modifier votre network]
 
 --
 
@@ -526,21 +566,16 @@ conf centralisée
 abstraction de ce qui se passe derriere l'API d'un service
 
 
-
-
-
-
-
 ---
 ### Transport cost is zero
 
 --
 
-Le network fait partie intégrante de votre logiciel :
+.red[le network fait partie intégrante de votre logiciel]
 
 --
 
-Il va falloir le gérer
+il va falloir le gérer
 
 
 
@@ -551,18 +586,22 @@ aussi : chaque appel de service nécessite (dé)sérialization (cout niveau perf
 ---
 ### The network is homogeneous
 
+--
+
+.red[le nombre de hops peut varier d'une requête à l'autre]
 
 --
 
-race conditions :
+.red[les bottlenecks existent]
 
 --
 
-vous ne savez pas le nombre de hops dans un call réseau
-
+tracing, observabilité de l'hostname
 
 ???
 vous faites du many-to-many : la latence pour une même requete peut varier drastiquement suivant le chemin qu'elle prend
+observabilité de l'hostname : savoir quelle VM à géré, tracer la requete
+distributed tracing : hostname dans l'instrumentation
 
 ---
 template: title
